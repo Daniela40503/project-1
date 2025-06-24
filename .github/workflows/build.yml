@@ -9,37 +9,35 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      # 1) Clonar el repositorio con mejores opciones
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           persist-credentials: false
 
-      # 2) Limpiar extraheader (por si quedó alguna config)
       - name: Limpiar extraheader de git
         run: git config --unset-all http.https://github.com/.extraheader || true
 
-      # 3) Obtener fecha (para usar en caché)
       - name: Get Date
         id: get-date
         run: echo "date=$(date -u '+%Y%m%d')" >> "$GITHUB_OUTPUT"
 
-      # 4) Caché global de Buildozer
       - name: Cache Buildozer global directory
         uses: actions/cache@v3
         with:
           path: .buildozer_global
           key: buildozer-global-${{ hashFiles('buildozer.spec') }}
 
-      # 5) Caché local del proyecto
       - name: Cache Buildozer local directory
         uses: actions/cache@v4
         with:
           path: .buildozer
           key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('buildozer.spec') }}
 
-      # 6) Compilar con Buildozer
+      - name: Install Android SDK API 31
+        run: |
+          yes | sdkmanager "platforms;android-31"
+
       - name: Build with Buildozer
         uses: ArtemSBulgakov/buildozer-action@v1
         id: buildozer
@@ -47,7 +45,6 @@ jobs:
           command: buildozer android debug
           buildozer_version: stable
 
-      # 7) Subir el APK generado
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
