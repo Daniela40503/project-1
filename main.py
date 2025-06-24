@@ -32,7 +32,7 @@ class ProductoLabel(Label):
         super().__init__(**kwargs)
 
 
-class InventarioApp(MDApp):
+class InventarioApp(App):
     ARCHIVO_INVENTARIO = "inventario.json"
     ARCHIVO_VENTAS = "ventas.json" 
     # Colores pastel y fondo blanco
@@ -816,11 +816,4 @@ class PantallaVenta(Screen):
     
         
 if __name__ == '__main__':
-    try:
-        InventarioApp().run()
-    except Exception as e:
-        import traceback
-        with open("/sdcard/error_log.txt", "w", encoding="utf-8") as f:
-            f.write("ERROR al iniciar la app:")
-            f.write(str(e) + "")
-            traceback.print_exc(file=f)
+    InventarioApp().run()
