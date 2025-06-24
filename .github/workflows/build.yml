@@ -36,19 +36,18 @@ jobs:
         with:
           path: .buildozer
           key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('buildozer.spec') }}
-      - name: Ensure Android API 30 is installed
+      - name: Ensure Android SDK Command Line Tools and API 30 are installed
         run: |
-          set -e
-          SDKMANAGER1="$HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager"
-          SDKMANAGER2="$HOME/.buildozer/android/platform/android-sdk/cmdline-tools/tools/bin/sdkmanager"
-          if [ -f "$SDKMANAGER1" ]; then
-            yes | "$SDKMANAGER1" "platforms;android-30"
-          elif [ -f "$SDKMANAGER2" ]; then
-            yes | "$SDKMANAGER2" "platforms;android-30"
-          else
-            echo "sdkmanager not found in expected locations."
-            exit 1
+          ANDROID_SDK_ROOT="$HOME/.buildozer/android/platform/android-sdk"
+          if ! find "$ANDROID_SDK_ROOT" -name sdkmanager -type f | grep -q .; then
+            mkdir -p "$ANDROID_SDK_ROOT/cmdline-tools"
+            cd "$ANDROID_SDK_ROOT/cmdline-tools"
+            wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdline-tools.zip
+            unzip cmdline-tools.zip
+            mv cmdline-tools latest
           fi
+          SDKMANAGER=$(find "$ANDROID_SDK_ROOT" -name sdkmanager -type f | head -n 1)
+          yes | "$SDKMANAGER" "platforms;android-30"
       - name: Build with Buildozer
         uses: ArtemSBulgakov/buildozer-action@v1
         id: buildozer
