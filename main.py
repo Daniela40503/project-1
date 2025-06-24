@@ -400,10 +400,10 @@ class InventarioApp(MDApp):
         )
         popup.open()
 
-   def mostrar_inventario(self):
-    self.inventario_list.clear_widgets()
-    for idx, prod in enumerate(self.inventario):
-        tarjeta = BoxLayout(orientation='horizontal', size_hint_y=None, height=dp(120), padding=dp(5), spacing=dp(10))
+    def mostrar_inventario(self):
+        self.inventario_list.clear_widgets()
+        for idx, prod in enumerate(self.inventario):
+            tarjeta = BoxLayout(orientation='horizontal', size_hint_y=None, height=dp(120), padding=dp(5), spacing=dp(10))
         
         # Imagen del producto (con manejo de error si la ruta no existe)
         try:
