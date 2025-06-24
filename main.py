@@ -802,13 +802,20 @@ if __name__ == '__main__':
     try:
         InventarioApp().run()
     except Exception as e:
-        from kivy.uix.popup import Popup
-        from kivy.uix.label import Label
-        from kivy.base import runTouchApp
         import traceback
 
-        error_text = f"{type(e).__name__}: {str(e)}"
-        popup = Popup(title="Error", content=Label(text=error_text), size_hint=(0.9, 0.5))
-        popup.open()
-        runTouchApp()
+        # Ruta del archivo de log en Android
+        try:
+            ruta_log = "/sdcard/error_log.txt"
+            with open(ruta_log, "w", encoding="utf-8") as f:
+                f.write("ERROR al iniciar la app:\n")
+                traceback.print_exc(file=f)
+        except Exception as log_error:
+            # No se pudo guardar el archivo, mostrar popup
+            from kivy.base import runTouchApp
+            popup = Popup(title="Error Grave",
+                          content=Label(text=f"{type(e).__name__}: {str(e)}\n(No se pudo guardar log)"),
+                          size_hint=(0.9, 0.5))
+            popup.open()
+            runTouchApp()
 
