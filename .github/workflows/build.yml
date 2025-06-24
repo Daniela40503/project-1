@@ -7,6 +7,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-22.04
+    env:
+      ANDROIDAPI: 30
+      ANDROIDMINAPI: 21
 
     steps:
       - name: Checkout code
@@ -33,10 +36,6 @@ jobs:
         with:
           path: .buildozer
           key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('buildozer.spec') }}
-
-      - name: Install Android SDK API 31
-        run: |
-          yes | sdkmanager "platforms;android-31"
 
       - name: Build with Buildozer
         uses: ArtemSBulgakov/buildozer-action@v1
