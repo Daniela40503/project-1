@@ -397,59 +397,39 @@ class InventarioApp(MDApp):
         )
         popup.open()
 
-    def mostrar_inventario(self):
-        self.inventario_list.clear_widgets()
-        for idx, prod in enumerate(self.inventario):
-            tarjeta = BoxLayout(orientation='horizontal', size_hint_y=None, height=dp(120), padding=dp(5), spacing=dp(10))
-            
-            if prod["imagen"]:
+   def mostrar_inventario(self):
+    self.inventario_list.clear_widgets()
+    for idx, prod in enumerate(self.inventario):
+        tarjeta = BoxLayout(orientation='horizontal', size_hint_y=None, height=dp(120), padding=dp(5), spacing=dp(10))
+        
+        # Imagen del producto (con manejo de error si la ruta no existe)
+        try:
+            if prod["imagen"] and os.path.exists(prod["imagen"]):
                 img = Image(source=prod["imagen"], size_hint=(None, None), size=(dp(100), dp(100)), allow_stretch=True)
             else:
-                img = Label(text="Sin imagen", size_hint=(None, None), size=(dp(100), dp(100)), halign='center', valign='middle', color=self.COLOR_TEXTO)
+                raise FileNotFoundError
+        except Exception:
+            img = Label(text="Sin imagen", size_hint=(None, None), size=(dp(100), dp(100)),
+                        halign='center', valign='middle', color=self.COLOR_TEXTO)
 
-            tarjeta.add_widget(img)
+        tarjeta.add_widget(img)
 
-            datos = BoxLayout(orientation='vertical')
-            lbl_nombre = ProductoLabel(text=prod["nombre"], font_size=18, bold=True, index=idx, color=self.COLOR_TEXTO)
-            lbl_nombre.bind(on_touch_down=self.seleccionar_producto)
-            datos.add_widget(lbl_nombre)
+        datos = BoxLayout(orientation='vertical')
+        lbl_nombre = ProductoLabel(text=prod["nombre"], font_size=18, bold=True, index=idx, color=self.COLOR_TEXTO)
+        lbl_nombre.bind(on_touch_down=self.seleccionar_producto)
+        datos.add_widget(lbl_nombre)
 
-            datos.add_widget(Label(text=f"Costo unitario: ${prod['costo_unitario']:.2f}", color=self.COLOR_TEXTO))
-            datos.add_widget(Label(text=f"Precio sugerido: ${prod['precio_sugerido']:.2f}", color=self.COLOR_TEXTO))
-            datos.add_widget(Label(text=f"Precio final: ${prod['precio_final']:.2f}", color=self.COLOR_TEXTO))
-            datos.add_widget(Label(text=f"Piezas: {prod['piezas']}", color=self.COLOR_TEXTO))
+        datos.add_widget(Label(text=f"Costo unitario: ${prod['costo_unitario']:.2f}", color=self.COLOR_TEXTO))
+        datos.add_widget(Label(text=f"Precio sugerido: ${prod['precio_sugerido']:.2f}", color=self.COLOR_TEXTO))
+        datos.add_widget(Label(text=f"Precio final: ${prod['precio_final']:.2f}", color=self.COLOR_TEXTO))
+        datos.add_widget(Label(text=f"Piezas: {prod['piezas']}", color=self.COLOR_TEXTO))
 
-            tarjeta.add_widget(datos)
+        tarjeta.add_widget(datos)
 
-            self.inventario_list.add_widget(tarjeta)
+        self.inventario_list.add_widget(tarjeta)
 
-        self.producto_seleccionado = None
-        self.btn_eliminar.disabled = True
- 
-    def seleccionar_producto(self, instance, touch):
-        if instance.collide_point(*touch.pos):
-            self.producto_seleccionado = instance.index
-            self.btn_eliminar.disabled = False
-            self.btn_editar.disabled = False
-    def editar_producto(self, instance):
-        if self.producto_seleccionado is not None:
-            producto = self.inventario[self.producto_seleccionado]
-            self.input_nombre.text = producto['nombre']
-            self.input_costo.text = str(producto['costo_unitario'] * producto['piezas'])
-            self.input_piezas.text = str(producto['piezas'])
-            self.input_precio_venta.text = str(producto['precio_final'])
-            self.img_ruta = producto['imagen']
-            self.lbl_imagen.text = f"Imagen: {os.path.basename(self.img_ruta)}" if self.img_ruta else "No hay imagen seleccionada"
-        # Reabrir el popup
-            if not self.formulario_popup:
-                self.formulario_popup = Popup(title="Editar Producto", content=self.form_layout, size_hint=(0.9, 0.8))
-        else:
-            self.formulario_popup.title = "Editar Producto"
-        # Cambiar texto del botón agregar
-        self.btn_agregar.text = "Guardar cambios"
-        self.btn_agregar.unbind(on_press=self.agregar_producto)
-        self.btn_agregar.bind(on_press=self.guardar_edicion_producto)
-        self.formulario_popup.open()
+    self.producto_seleccionado = None
+    self.btn_eliminar.disabled = True
     def guardar_edicion_producto(self, instance):
         try:
             nombre = self.input_nombre.text.strip()
