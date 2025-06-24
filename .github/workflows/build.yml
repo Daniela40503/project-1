@@ -38,7 +38,17 @@ jobs:
           key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('buildozer.spec') }}
       - name: Ensure Android API 30 is installed
         run: |
-          yes | $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager "platforms;android-30"
+          set -e
+          SDKMANAGER1="$HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager"
+          SDKMANAGER2="$HOME/.buildozer/android/platform/android-sdk/cmdline-tools/tools/bin/sdkmanager"
+          if [ -f "$SDKMANAGER1" ]; then
+            yes | "$SDKMANAGER1" "platforms;android-30"
+          elif [ -f "$SDKMANAGER2" ]; then
+            yes | "$SDKMANAGER2" "platforms;android-30"
+          else
+            echo "sdkmanager not found in expected locations."
+            exit 1
+          fi
       - name: Build with Buildozer
         uses: ArtemSBulgakov/buildozer-action@v1
         id: buildozer
