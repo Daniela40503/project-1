@@ -821,8 +821,6 @@ if __name__ == '__main__':
     except Exception as e:
         import traceback
         with open("/sdcard/error_log.txt", "w", encoding="utf-8") as f:
-            f.write("ERROR al iniciar la app:
-")
-            f.write(str(e) + "
-")
+            f.write("ERROR al iniciar la app:")
+            f.write(str(e) + "")
             traceback.print_exc(file=f)
