@@ -1,7 +1,13 @@
 import json
 import os
-os.environ["KIVY_GL_BACKEND"] = "angle_sdl2"
 from pathlib import Path
+
+# Solicitar permisos en Android
+try:
+    from android.permissions import request_permissions, Permission
+    request_permissions([Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE])
+except ImportError:
+    pass  # No estamos en Android o el módulo no está disponible
 
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
@@ -17,14 +23,11 @@ from kivy.metrics import dp
 from kivy.utils import get_color_from_hex
 from kivy.graphics import Color, Rectangle
 from kivy.uix.screenmanager import ScreenManager, Screen
-from datetime import datetime
 from datetime import datetime, timedelta
 from collections import Counter
 
-
 from kivymd.app import MDApp
 from kivymd.uix.label import MDLabel
-
 
 class ProductoLabel(Label):
     def __init__(self, **kwargs):
@@ -799,8 +802,13 @@ if __name__ == '__main__':
     try:
         InventarioApp().run()
     except Exception as e:
+        from kivy.uix.popup import Popup
+        from kivy.uix.label import Label
+        from kivy.base import runTouchApp
         import traceback
-        with open("/sdcard/error_log.txt", "w", encoding="utf-8") as f:
-            f.write("ERROR al iniciar la app:")
-            f.write(str(e) + "")
-            traceback.print_exc(file=f)
+
+        error_text = f"{type(e).__name__}: {str(e)}"
+        popup = Popup(title="Error", content=Label(text=error_text), size_hint=(0.9, 0.5))
+        popup.open()
+        runTouchApp()
+
