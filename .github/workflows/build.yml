@@ -60,7 +60,7 @@ jobs:
           pip install cython buildozer[android]
       - name: Install Android Build Tools
         run: |
-          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk "build-tools;34.0.0"  
+          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk "build-tools;34.0.0" "platform-tools"
       
       - name: Build with Buildozer
         run: | 
