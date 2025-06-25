@@ -320,12 +320,17 @@ class InventarioApp(MDApp):
 
     def abrir_selector_imagen(self, instance):
         layout = BoxLayout(orientation='vertical', spacing=10)
+        try:
+            from android.storage import primary_external_storage_path
+            path = primary_external_storage_path() + "/Download"
+        except ImportError:
+            path = str(Path.home() / "Downloads")
+
         filechooser = FileChooserIconView(
-            path=str(Path.home() / "Downloads"),
+            path=path,
             filters=['*.png', '*.jpg', '*.jpeg', '*.gif', '*.bmp'],
             size_hint=(1, 0.9)
         )
-
         btn_seleccionar = Button(
             text="Seleccionar Imagen",
             size_hint=(1, 0.1),
