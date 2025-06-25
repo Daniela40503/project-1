@@ -77,3 +77,5 @@ jobs:
         with:
           name: package
           path: ${{ steps.buildozer.outputs.filename || 'bin/*.apk' }}
+      - name: Mostrar archivos generados
+        run: ls -lhR .
