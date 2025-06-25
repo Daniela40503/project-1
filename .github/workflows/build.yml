@@ -63,7 +63,10 @@ jobs:
           yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk "build-tools;34.0.0"  
       
       - name: Build with Buildozer
-        run: buildozer android debug
+        run: | 
+          for i in 1 2 3; do
+            buildozer android debug && break || sleep 15
+          done
 
 
       - name: Debug Buildozer Outputs
