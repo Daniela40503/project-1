@@ -43,7 +43,8 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-
+      - name: Export JAVA_HOME for later steps
+        run: echo "JAVA_HOME=${JAVA_HOME}" >> $GITHUB_ENV
       - name: Install Android SDK tools
         run: |
           sudo apt-get update
