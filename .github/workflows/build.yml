@@ -54,15 +54,14 @@ jobs:
           echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
           echo "PATH=$HOME/android-sdk/cmdline-tools/latest/bin:$PATH" >> $GITHUB_ENV
      
-      - name: Install dependencies
+      - name: Set up Python and install Buildozer
         run: |
-          pip install cython
+          python3 -m pip install --upgrade pip
+          pip install cython buildozer[android]
+
       - name: Build with Buildozer
-        uses: ArtemSBulgakov/buildozer-action@v1
-        id: buildozer
-        with:
-          command: buildozer android debug
-          buildozer_version: stable
+        run: buildozer android debug
+
 
       - name: Debug Buildozer Outputs
         run: echo '${{ toJson(steps.buildozer.outputs) }}'
