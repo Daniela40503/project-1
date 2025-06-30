@@ -40,9 +40,6 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Set JAVA_HOME
-        run: echo "JAVA_HOME=${JAVA_HOME}" >> $GITHUB_ENV
-
       - name: Install Android SDK tools
         run: |
           sudo apt-get update
@@ -53,31 +50,30 @@ jobs:
           mv $HOME/android-sdk/cmdline-tools/cmdline-tools $HOME/android-sdk/cmdline-tools/latest
           echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
           echo "PATH=$HOME/android-sdk/cmdline-tools/latest/bin:$PATH" >> $GITHUB_ENV
-     
-      - name: Set up Python and install Buildozer
-        run: |
-          python3 -m pip install --upgrade pip
-          pip install cython buildozer[android]
+
       - name: Accept Android SDK licenses
         run: yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses --sdk_root=$HOME/android-sdk
 
       - name: Install Android Build Tools
         run: |
-          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk "build-tools;34.0.0" "platform-tools"
+          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk "build-tools;34.0.0" "platform-tools" "platforms;android-34"
+
+      - name: Set up Python and install Buildozer
+        run: |
+          python3 -m pip install --upgrade pip
+          pip install cython buildozer[android]
+
       - name: Build with Buildozer
-        run: | 
+        run: |
           for i in 1 2 3; do
             buildozer android debug && break || sleep 15
           done
 
-
-      - name: Debug Buildozer Outputs
-        run: echo '${{ toJson(steps.buildozer.outputs) }}'
-
-      - name: Upload artifacts
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: package
-          path: ${{ steps.buildozer.outputs.filename || 'bin/*.apk' }}
+          name: app-debug
+          path: bin/*.apk
+
       - name: Mostrar archivos generados
         run: ls -lhR .
